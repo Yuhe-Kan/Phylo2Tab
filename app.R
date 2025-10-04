@@ -97,18 +97,18 @@ ui <- fluidPage(
     #          )
     # ),
     
-    tabPanel("Namco",
-             sidebarLayout(
-               sidebarPanel(
-                 actionButton("run_Namco", "Run")
-               ),
-               mainPanel(
-                 h4("Table Preview"),
-                 tableOutput("files7"),
-                 downloadButton("download7", "Download transfered table")
-               )
-             )
-    ),
+    # tabPanel("Namco",
+    #          sidebarLayout(
+    #            sidebarPanel(
+    #              actionButton("run_Namco", "Run")
+    #            ),
+    #            mainPanel(
+    #              h4("Table Preview"),
+    #              tableOutput("files7"),
+    #              downloadButton("download7", "Download transfered table")
+    #            )
+    #          )
+    # ),
     
     # tabPanel("MicrobiomeAnalyst 2.0",
     #          sidebarLayout(
@@ -161,6 +161,34 @@ ui <- fluidPage(
                )
              )
     ),
+  ),
+  
+  hr(),
+  h4("使用说明:"),
+  tags$div(
+    style = "margin-left:20px;",
+    tags$ol(
+      tags$li("在 “upload dataset” 页面中上传本地 phyloseq (.rds) 文件；或使用示例文件进行测试；"),
+      tags$li("点击 “Run” 按钮运行相应模块，Table Preview即可查看样本信息；"),
+      tags$li("使用 “Download” 下载各格式转换后的表格，解压缩后即可上传至相应在线工具进行分析。"),
+      tags$li("可忽略Table Preview的错误，直接下载文件即可！")
+    )
+  ),
+  
+  hr(),
+  h4("在线网站网址:"),
+  tags$div(
+    style = "margin-left:20px;",
+    tags$ol(
+      tags$li("Shiny-phyloseq(在R中运行)；shiny::runGitHub('shiny-phyloseq','joey711')"),
+      tags$li("ampvis2；https://kasperskytte.shinyapps.io/shinyampvis/"),
+      tags$li("animalcules(在R中运行): run_animalcules()"),
+      tags$li("wiSDOM(在R中运行): shiny::runGitHub('wiSDOM','lunching')"),
+      tags$li("Mian: https://miandata.org/projects"),
+      tags$li("Namco: https://exbio.wzw.tum.de/namco/"),
+      tags$li("MicrobiomeAnalyst 2.0: https://www.microbiomeanalyst.ca/MicrobiomeAnalyst/;# NOTE: The ID in the feature_table should be modified to #NAME, 
+              in the sample_table to sample-id, and in the tax_table to #TAXONOMY.And manually change the file extensions of the three files from .tsv to .csv.")
+    )
   )
 )
 
@@ -180,6 +208,7 @@ server <- function(input, output, session) {
       NULL
     }
   })
+
   
   # 文件或示例数据的信息展示
   output$files1 <- renderTable({
@@ -207,7 +236,7 @@ server <- function(input, output, session) {
   # 显示 sample_data 表
   output$files2 <- renderTable({
     req(filteredData2())
-    as.data.frame(sample_data(filteredData2()))
+    head(as.data.frame(sample_data(filteredData2())),5)
   })
   
   # 下载处理后的 RData
@@ -220,7 +249,7 @@ server <- function(input, output, session) {
   )
   
   # 点击 run_animalcules 后生成处理结果
-  filteredData3 <- eventReactive(input$run_ShinyPhyloseq, {
+  filteredData3 <- eventReactive(input$run_animalcules, {
     ps <- uploadedData()
     req(ps)
     ps
@@ -265,7 +294,7 @@ server <- function(input, output, session) {
   # 显示 sample_data 表
   output$files4 <- renderTable({
     req(filteredData4())
-    as.data.frame(sample_data(filteredData4()))
+    head(as.data.frame(sample_data(filteredData4())),5)
   })
   
   output$download4 <- downloadHandler(
@@ -277,7 +306,7 @@ server <- function(input, output, session) {
       tmpdir <- file.path(tempdir(), "wiSDOM_tables")
       if (!dir.exists(tmpdir)) dir.create(tmpdir)
       
-      otu_tax_table <- phyloseq_to_df(ps, addtax = TRUE)
+      otu_tax_table <- phyloseq_to_df(filteredData4(), addtax = TRUE)
       prefixes <- paste0("D_", 0:6, "__")
       cols_to_modify <- 2:8
       
@@ -290,8 +319,7 @@ server <- function(input, output, session) {
       otu_tax_table <- otu_tax_table[, c(ncol(otu_tax_table),9:(ncol(otu_tax_table)-2))]
       
       # exporting metadata (only keeping one column)
-      metadata<-as.data.frame(as.matrix(sample_data(ps)));metadata
-      class(metadata)
+      metadata<-as.data.frame(as.matrix(sample_data(filteredData4())));metadata
       library(tibble)
       metadata<-rownames_to_column(metadata,var = "ID");metadata
       metadata<- metadata[,1:2] #Based on the research objectives, keep one column (variable)
@@ -320,7 +348,7 @@ server <- function(input, output, session) {
   # 显示 sample_data 表
   output$files5 <- renderTable({
     req(filteredData5())
-    as.data.frame(sample_data(filteredData5()))
+    head(as.data.frame(sample_data(filteredData5())),5)
   })
 
   output$download5 <- downloadHandler(
@@ -370,7 +398,7 @@ server <- function(input, output, session) {
   # 显示 sample_data 表
   output$files11 <- renderTable({
     req(filteredData11())
-    as.data.frame(sample_data(filteredData11()))
+    head(as.data.frame(sample_data(filteredData11())),5)
   })
 
   output$download11 <- downloadHandler(
@@ -383,12 +411,12 @@ server <- function(input, output, session) {
       if (!dir.exists(tmpdir)) dir.create(tmpdir)
       
       # ps <- filteredData11()
-      otu_tax_table <- phyloseq_to_df(ps, addtax = TRUE)
+      otu_tax_table <- phyloseq_to_df(filteredData11(), addtax = TRUE)
       class(otu_tax_table)
       otu_tax_table <- otu_tax_table[, c(1, 9:ncol(otu_tax_table), 2:8)]
       
       # exporting metadata
-      metadata<-as.data.frame(as.matrix(sample_data(ps)))
+      metadata<-as.data.frame(as.matrix(sample_data(filteredData11())))
       class(metadata)
       library(tibble)
       metadata<-rownames_to_column(metadata,var = "SampleID")
