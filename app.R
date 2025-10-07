@@ -30,6 +30,33 @@ ui <- fluidPage(
                  h4("File information / Example dataset"),
                  tableOutput("files1")
                )
+             ),
+             hr(),
+             h4("使用说明:"),
+             tags$div(
+               style = "margin-left:20px;",
+               tags$ol(
+                 tags$li("在 “upload dataset” 页面中上传本地 phyloseq (.rds) 文件；或使用示例文件进行测试；"),
+                 tags$li("点击 “Run” 按钮运行相应模块，Table Preview即可查看样本信息；"),
+                 tags$li("使用 “Download” 下载各格式转换后的表格，解压缩后即可上传至相应在线工具进行分析。"),
+                 tags$li("可忽略Table Preview的错误，直接下载文件即可！")
+               )
+             ),
+             
+             hr(),
+             h4("在线网站网址:"),
+             tags$div(
+               style = "margin-left:20px;",
+               tags$ol(
+                 tags$li("Shiny-phyloseq(在R中运行)；shiny::runGitHub('shiny-phyloseq','joey711')"),
+                 tags$li("ampvis2；https://kasperskytte.shinyapps.io/shinyampvis/"),
+                 tags$li("animalcules(在R中运行): run_animalcules()"),
+                 tags$li("wiSDOM(在R中运行): shiny::runGitHub('wiSDOM','lunching')"),
+                 tags$li("Mian: https://miandata.org/projects"),
+                 tags$li("Namco: https://exbio.wzw.tum.de/namco/"),
+                 tags$li("MicrobiomeAnalyst 2.0: https://www.microbiomeanalyst.ca/MicrobiomeAnalyst/;# NOTE: The ID in the feature_table should be modified to #NAME, 
+              in the sample_table to sample-id, and in the tax_table to #TAXONOMY.And manually change the file extensions of the three files from .tsv to .csv.")
+               )
              )
     ),
     
@@ -160,34 +187,6 @@ ui <- fluidPage(
                  downloadButton("download11", "Download transfered table")
                )
              )
-    ),
-  ),
-  
-  hr(),
-  h4("使用说明:"),
-  tags$div(
-    style = "margin-left:20px;",
-    tags$ol(
-      tags$li("在 “upload dataset” 页面中上传本地 phyloseq (.rds) 文件；或使用示例文件进行测试；"),
-      tags$li("点击 “Run” 按钮运行相应模块，Table Preview即可查看样本信息；"),
-      tags$li("使用 “Download” 下载各格式转换后的表格，解压缩后即可上传至相应在线工具进行分析。"),
-      tags$li("可忽略Table Preview的错误，直接下载文件即可！")
-    )
-  ),
-  
-  hr(),
-  h4("在线网站网址:"),
-  tags$div(
-    style = "margin-left:20px;",
-    tags$ol(
-      tags$li("Shiny-phyloseq(在R中运行)；shiny::runGitHub('shiny-phyloseq','joey711')"),
-      tags$li("ampvis2；https://kasperskytte.shinyapps.io/shinyampvis/"),
-      tags$li("animalcules(在R中运行): run_animalcules()"),
-      tags$li("wiSDOM(在R中运行): shiny::runGitHub('wiSDOM','lunching')"),
-      tags$li("Mian: https://miandata.org/projects"),
-      tags$li("Namco: https://exbio.wzw.tum.de/namco/"),
-      tags$li("MicrobiomeAnalyst 2.0: https://www.microbiomeanalyst.ca/MicrobiomeAnalyst/;# NOTE: The ID in the feature_table should be modified to #NAME, 
-              in the sample_table to sample-id, and in the tax_table to #TAXONOMY.And manually change the file extensions of the three files from .tsv to .csv.")
     )
   )
 )
